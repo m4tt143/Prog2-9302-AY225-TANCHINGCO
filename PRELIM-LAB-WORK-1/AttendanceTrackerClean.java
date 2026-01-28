@@ -10,7 +10,7 @@
  * 3. Type: java AttendanceTrackerClean
  * 4. The attendance window will appear!
  * 
- * @author Student Name
+ * @author Tanchingco, John Matthew R.
  * @version 3.0 - Modern Clean Design
  * @date January 2026
  * ===========================================================================
