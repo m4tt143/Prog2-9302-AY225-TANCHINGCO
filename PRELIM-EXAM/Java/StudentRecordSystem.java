@@ -1,4 +1,3 @@
-
 /**
  * Student Record System - Lab Exam
  * Programmer: Tanchingco, John Matthew R. - 23-0792-227
@@ -255,9 +254,17 @@ public class StudentRecordSystem extends JFrame {
     }
     
     private void loadCSVData() {
+        File csvFile = findCSVFile();
+        
+        if (csvFile == null || !csvFile.exists()) {
+            JOptionPane.showMessageDialog(this,
+                "MOCK_DATA.csv not found!\nSearched in current directory and parent directories.",
+                "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
         try {
-            // Try to load from same directory as the Java file
-            BufferedReader reader = new BufferedReader(new FileReader("MOCK_DATA.csv"));
+            BufferedReader reader = new BufferedReader(new FileReader(csvFile));
             String line;
             boolean firstLine = true;
             int count = 0;  
@@ -280,14 +287,11 @@ public class StudentRecordSystem extends JFrame {
             }
             
             reader.close();
+            System.out.println("Loaded CSV from: " + csvFile.getAbsolutePath());
             JOptionPane.showMessageDialog(this, 
                 count + " records loaded successfully",
                 "Success", JOptionPane.INFORMATION_MESSAGE);
             
-        } catch (FileNotFoundException e) {
-            JOptionPane.showMessageDialog(this,
-                "MOCK_DATA.csv not found!\nPlease place it in the same folder as the .java file.",
-                "Error", JOptionPane.ERROR_MESSAGE);
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this,
                 "Error reading file: " + e.getMessage(),
@@ -295,10 +299,59 @@ public class StudentRecordSystem extends JFrame {
         }
     }
     
+    private File findCSVFile() {
+        // Try current directory first
+        File currentDir = new File(System.getProperty("user.dir"));
+        File csvFile = new File(currentDir, "MOCK_DATA.csv");
+        
+        if (csvFile.exists()) {
+            return csvFile;
+        }
+        
+        // Search in subdirectories (like Java folder)
+        File[] subdirs = currentDir.listFiles(File::isDirectory);
+        if (subdirs != null) {
+            for (File subdir : subdirs) {
+                csvFile = new File(subdir, "MOCK_DATA.csv");
+                if (csvFile.exists()) {
+                    return csvFile;
+                }
+            }
+        }
+        
+        // Try parent directory
+        File parentDir = currentDir.getParentFile();
+        if (parentDir != null) {
+            csvFile = new File(parentDir, "MOCK_DATA.csv");
+            if (csvFile.exists()) {
+                return csvFile;
+            }
+            
+            // Search parent's subdirectories
+            subdirs = parentDir.listFiles(File::isDirectory);
+            if (subdirs != null) {
+                for (File subdir : subdirs) {
+                    csvFile = new File(subdir, "MOCK_DATA.csv");
+                    if (csvFile.exists()) {
+                        return csvFile;
+                    }
+                }
+            }
+        }
+        
+        return null;
+    }
+    
     private void saveToCSV() {
+        File csvFile = findCSVFile();
+        
+        // If CSV doesn't exist, create it in current directory
+        if (csvFile == null || !csvFile.exists()) {
+            csvFile = new File("MOCK_DATA.csv");
+        }
+        
         try {
-            // Save to same directory as the Java file
-            BufferedWriter writer = new BufferedWriter(new FileWriter("MOCK_DATA.csv"));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(csvFile));
             
             // Write header
             writer.write("StudentID,first_name,last_name,LAB WORK 1,LAB WORK 2,LAB WORK 3,PRELIM EXAM,ATTENDANCE GRADE");
@@ -318,7 +371,7 @@ public class StudentRecordSystem extends JFrame {
             }
             
             writer.close();
-            System.out.println("Data saved to CSV");
+            System.out.println("Data saved to: " + csvFile.getAbsolutePath());
             
         } catch (IOException e) {
             System.err.println("Error saving to CSV: " + e.getMessage());
