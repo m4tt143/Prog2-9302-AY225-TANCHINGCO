@@ -1089,25 +1089,92 @@ function render() {
    ADD STUDENT (VALIDATED)
 ============================ */
 
+function parseCSV(csvString) {
+    const lines = csvString.trim().split('\n');
+    const data = [];
+
+    for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',');
+
+        if (values.length < 8) continue;
+
+        data.push({
+            studentId: values[0],
+            firstName: values[1],
+            lastName: values[2],
+            lab1: values[3],
+            lab2: values[4],
+            lab3: values[5],
+            prelim: values[6],
+            attendance: values[7]
+        });
+    }
+
+    return data;
+}
+
+/* ============================
+   SCORE VALIDATION (1–100)
+============================ */
+
+function isValidScore(value) {
+    const num = Number(value);
+    return Number.isInteger(num) && num >= 1 && num <= 100;
+}
+
+/* ============================
+   RENDER TABLE
+============================ */
+
+function render() {
+    const tableBody = document.getElementById('tableBody');
+    let rows = '';
+
+    students.forEach((student, index) => {
+        rows += `
+            <tr>
+                <td>${student.studentId}</td>
+                <td>${student.firstName}</td>
+                <td>${student.lastName}</td>
+                <td>${student.lab1}</td>
+                <td>${student.lab2}</td>
+                <td>${student.lab3}</td>
+                <td>${student.prelim}</td>
+                <td>${student.attendance}</td>
+                <td>
+                    <button onclick="deleteStudent(${index})">Delete</button>
+                </td>
+            </tr>
+        `;
+    });
+
+    tableBody.innerHTML = rows;
+}
+
+/* ============================
+   ADD STUDENT (JS-ONLY CHECK)
+============================ */
+
 function addStudent() {
-    const studentId = document.getElementById('studentId').value.trim();
-    const firstName = document.getElementById('firstName').value.trim();
-    const lastName = document.getElementById('lastName').value.trim();
-    const lab1 = document.getElementById('lab1').value.trim();
-    const lab2 = document.getElementById('lab2').value.trim();
-    const lab3 = document.getElementById('lab3').value.trim();
-    const prelim = document.getElementById('prelim').value.trim();
-    const attendance = document.getElementById('attendance').value.trim();
+    const studentId = prompt('Enter Student ID:');
+    const firstName = prompt('Enter First Name:');
+    const lastName = prompt('Enter Last Name:');
+
+    const lab1 = prompt('Enter Lab Work 1 (1–100):');
+    const lab2 = prompt('Enter Lab Work 2 (1–100):');
+    const lab3 = prompt('Enter Lab Work 3 (1–100):');
+    const prelim = prompt('Enter Prelim Exam (1–100):');
+    const attendance = prompt('Enter Attendance Grade (1–100):');
 
     if (!studentId || !firstName || !lastName) {
-        alert('Please fill in Student ID, First Name, and Last Name.');
+        alert('Student ID, First Name, and Last Name are required.');
         return;
     }
 
     const scores = [lab1, lab2, lab3, prelim, attendance];
     for (let score of scores) {
         if (!isValidScore(score)) {
-            alert('Lab work, Prelim, and Attendance must be numbers from 1 to 100.');
+            alert('All scores must be whole numbers from 1 to 100.');
             return;
         }
     }
@@ -1122,11 +1189,6 @@ function addStudent() {
         prelim,
         attendance
     });
-
-    [
-        'studentId','firstName','lastName',
-        'lab1','lab2','lab3','prelim','attendance'
-    ].forEach(id => document.getElementById(id).value = '');
 
     render();
 }
@@ -1148,4 +1210,3 @@ document.addEventListener('DOMContentLoaded', () => {
     students = parseCSV(csvData);
     render();
 });
-
