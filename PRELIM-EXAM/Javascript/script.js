@@ -1011,20 +1011,12 @@ const csvData = `StudentID,first_name,last_name,LAB WORK 1,LAB WORK 2,LAB WORK 3
 064100852,Carie,Rassell,55,56,31,39,15
 23-0792-227,John Matthew,Tanchingco,100,100,100,100,100`;
 
-/**
- * Student Record System
- * Programmer: Tanchingco, John Matthew R.
- * Date: February 4, 2026
- */
-
-// ============================
-// GLOBAL STATE
-// ============================
 let students = [];
 
-// ============================
-// CSV PARSER (SAFE FOR 1000+)
-// ============================
+/* ============================
+   CSV PARSER
+============================ */
+
 function parseCSV(csvString) {
     const lines = csvString.trim().split('\n');
     const data = [];
@@ -1032,7 +1024,7 @@ function parseCSV(csvString) {
     for (let i = 1; i < lines.length; i++) {
         const values = lines[i].split(',');
 
-        // skip empty or broken rows
+        // Skip broken rows
         if (values.length < 8) continue;
 
         data.push({
@@ -1050,9 +1042,19 @@ function parseCSV(csvString) {
     return data;
 }
 
-// ============================
-// RENDER TABLE (NO CUTOFF)
-// ============================
+/* ============================
+   SCORE VALIDATION (1–100)
+============================ */
+
+function isValidScore(value) {
+    const num = Number(value);
+    return Number.isInteger(num) && num >= 1 && num <= 100;
+}
+
+/* ============================
+   RENDER TABLE (NO LIMIT)
+============================ */
+
 function render() {
     const tableBody = document.getElementById('tableBody');
     let rows = '';
@@ -1083,18 +1085,67 @@ function render() {
     if (count) count.textContent = students.length;
 }
 
-// ============================
-// DELETE RECORD
-// ============================
+/* ============================
+   ADD STUDENT (VALIDATED)
+============================ */
+
+function addStudent() {
+    const studentId = document.getElementById('studentId').value.trim();
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
+    const lab1 = document.getElementById('lab1').value.trim();
+    const lab2 = document.getElementById('lab2').value.trim();
+    const lab3 = document.getElementById('lab3').value.trim();
+    const prelim = document.getElementById('prelim').value.trim();
+    const attendance = document.getElementById('attendance').value.trim();
+
+    if (!studentId || !firstName || !lastName) {
+        alert('Please fill in Student ID, First Name, and Last Name.');
+        return;
+    }
+
+    const scores = [lab1, lab2, lab3, prelim, attendance];
+    for (let score of scores) {
+        if (!isValidScore(score)) {
+            alert('Lab work, Prelim, and Attendance must be numbers from 1 to 100.');
+            return;
+        }
+    }
+
+    students.push({
+        studentId,
+        firstName,
+        lastName,
+        lab1,
+        lab2,
+        lab3,
+        prelim,
+        attendance
+    });
+
+    [
+        'studentId','firstName','lastName',
+        'lab1','lab2','lab3','prelim','attendance'
+    ].forEach(id => document.getElementById(id).value = '');
+
+    render();
+}
+
+/* ============================
+   DELETE STUDENT
+============================ */
+
 function deleteStudent(index) {
     students.splice(index, 1);
     render();
 }
 
-// ============================
-// INIT
-// ============================
+/* ============================
+   INIT
+============================ */
+
 document.addEventListener('DOMContentLoaded', () => {
     students = parseCSV(csvData);
     render();
 });
+
