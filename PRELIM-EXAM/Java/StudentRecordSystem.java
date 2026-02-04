@@ -1,3 +1,4 @@
+
 /**
  * Student Record System - Lab Exam
  * Programmer: Tanchingco, John Matthew R. - 23-0792-227
@@ -255,7 +256,8 @@ public class StudentRecordSystem extends JFrame {
     
     private void loadCSVData() {
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("Prog2-9302-AY225-TANCHINGCO/PRELIM-EXAM/Java/MOCK_DATA.csv"));
+            // Try to load from same directory as the Java file
+            BufferedReader reader = new BufferedReader(new FileReader("MOCK_DATA.csv"));
             String line;
             boolean firstLine = true;
             int count = 0;  
@@ -284,7 +286,7 @@ public class StudentRecordSystem extends JFrame {
             
         } catch (FileNotFoundException e) {
             JOptionPane.showMessageDialog(this,
-                "MOCK_DATA.csv not found!\nPlease place it in the same folder.",
+                "MOCK_DATA.csv not found!\nPlease place it in the same folder as the .java file.",
                 "Error", JOptionPane.ERROR_MESSAGE);
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this,
@@ -295,7 +297,8 @@ public class StudentRecordSystem extends JFrame {
     
     private void saveToCSV() {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("Prog2-9302-AY225-TANCHINGCO/PRELIM-EXAM/Java/MOCK_DATA.csv"));
+            // Save to same directory as the Java file
+            BufferedWriter writer = new BufferedWriter(new FileWriter("MOCK_DATA.csv"));
             
             // Write header
             writer.write("StudentID,first_name,last_name,LAB WORK 1,LAB WORK 2,LAB WORK 3,PRELIM EXAM,ATTENDANCE GRADE");
