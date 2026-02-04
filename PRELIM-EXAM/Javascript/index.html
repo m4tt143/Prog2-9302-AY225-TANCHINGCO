@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Records</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+        
+        .subtitle {
+            font-size: 13px;
+            color: #6b7280;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #6b7280;
+            margin-bottom: 6px;
+        }
+        
+        input {
+            height: 38px;
+            padding: 0 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.15s;
+            background: #fff;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        input::placeholder {
+            color: #9ca3af;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+        
+        button {
+            height: 38px;
+            padding: 0 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        
+        .stats {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding: 12px 0;
+        }
+        
+        .record-count {
+            font-size: 13px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .record-number {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        
+        thead {
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            color: #1f2937;
+        }
+        
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+        
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .btn-delete {
+            height: 28px;
+            padding: 0 12px;
+            background: white;
+            color: #ef4444;
+            border: 1px solid #fecaca;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        
+        .btn-delete:hover {
+            background: #fef2f2;
+            border-color: #fca5a5;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 32px;
+            padding: 16px;
+            color: #9ca3af;
+            font-size: 12px;
+        }
+        
+        footer strong {
+            color: #6b7280;
+        }
+        
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Student Records</h1>
+            <p class="subtitle">Programmer: [Tanchingco, John Matthew R.] • Student ID: [23-0792-227]</p>
+        </header>
+        
+        <div class="card">
+            <div class="card-title">Add New Record</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="studentId">Student ID</label>
+                    <input type="text" id="studentId" placeholder="e.g., 123456789">
+                </div>
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" placeholder="John">
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" placeholder="Doe">
+                </div>
+                <div class="form-group">
+                    <label for="lab1">Lab 1</label>
+                    <input type="number" id="lab1" min="0" max="100" placeholder="0-100">
+                </div>
+                <div class="form-group">
+                    <label for="lab2">Lab 2</label>
+                    <input type="number" id="lab2" min="0" max="100" placeholder="0-100">
+                </div>
+                <div class="form-group">
+                    <label for="lab3">Lab 3</label>
+                    <input type="number" id="lab3" min="0" max="100" placeholder="0-100">
+                </div>
+                <div class="form-group">
+                    <label for="prelim">Prelim</label>
+                    <input type="number" id="prelim" min="0" max="100" placeholder="0-100">
+                </div>
+                <div class="form-group">
+                    <label for="attendance">Attendance</label>
+                    <input type="number" id="attendance" min="0" max="100" placeholder="0-100">
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn-primary" onclick="addStudent()">Add Student</button>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="stats">
+                <div class="card-title" style="margin: 0;">All Records</div>
+                <div class="record-count">
+                    Total: <span class="record-number" id="recordCount">0</span>
+                </div>
+            </div>
+            
+            <div class="table-wrapper">
+                <table id="studentTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Lab 1</th>
+                            <th>Lab 2</th>
+                            <th>Lab 3</th>
+                            <th>Prelim</th>
+                            <th>Attendance</th>
+                            <th style="text-align: center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Data populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <footer>
+            Developed by <strong>[Tanchingco,John Matthew R.]</strong> ([23-0792-227 ID])
+        </footer>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
