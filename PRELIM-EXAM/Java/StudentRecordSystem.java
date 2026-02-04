@@ -1,6 +1,6 @@
 /**
  * Student Record System - Lab Exam
- * Programmer: [Tanchingco, John Matthew R.] - [23-0792-227]
+ * Programmer: Tanchingco, John Matthew R. - 23-0792-227
  * Date: February 4, 2026
  */
 
@@ -9,6 +9,10 @@ import java.io.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
 
 public class StudentRecordSystem extends JFrame {
     
@@ -22,8 +26,53 @@ public class StudentRecordSystem extends JFrame {
         "ID", "First Name", "Last Name", "Lab 1", "Lab 2", "Lab 3", "Prelim", "Attendance"
     };
     
+    // Document Filter for Student ID (numbers and dashes only)
+    private class StudentIDFilter extends DocumentFilter {
+        @Override
+        public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) 
+                throws BadLocationException {
+            if (string.matches("[0-9-]*")) {
+                super.insertString(fb, offset, string, attr);
+            }
+        }
+        
+        @Override
+        public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) 
+                throws BadLocationException {
+            if (text.matches("[0-9-]*")) {
+                super.replace(fb, offset, length, text, attrs);
+            }
+        }
+    }
+    
+    // Document Filter for numeric fields (grades)
+    private class NumericFilter extends DocumentFilter {
+        @Override
+        public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) 
+                throws BadLocationException {
+            if (string.matches("[0-9]*")) {
+                String newStr = fb.getDocument().getText(0, fb.getDocument().getLength()) + string;
+                if (newStr.isEmpty() || Integer.parseInt(newStr) <= 100) {
+                    super.insertString(fb, offset, string, attr);
+                }
+            }
+        }
+        
+        @Override
+        public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) 
+                throws BadLocationException {
+            if (text.matches("[0-9]*")) {
+                String current = fb.getDocument().getText(0, fb.getDocument().getLength());
+                String newStr = current.substring(0, offset) + text + current.substring(offset + length);
+                if (newStr.isEmpty() || Integer.parseInt(newStr) <= 100) {
+                    super.replace(fb, offset, length, text, attrs);
+                }
+            }
+        }
+    }
+    
     public StudentRecordSystem() {
-        setTitle("Student Records - [Tanchingco, John Matthew R.] [23-0792-227]");
+        setTitle("Student Records - Tanchingco, John Matthew R. - 23-0792-227");
         setSize(1200, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -178,6 +227,13 @@ public class StudentRecordSystem extends JFrame {
         ));
         field.setPreferredSize(new Dimension(0, 36));
         
+        // Apply appropriate filter based on field type
+        if (labelText.equals("Student ID")) {
+            ((AbstractDocument) field.getDocument()).setDocumentFilter(new StudentIDFilter());
+        } else if (labelText.matches("Lab [123]|Prelim|Attendance")) {
+            ((AbstractDocument) field.getDocument()).setDocumentFilter(new NumericFilter());
+        }
+        
         container.add(label);
         container.add(field);
         parent.add(container);
@@ -237,6 +293,35 @@ public class StudentRecordSystem extends JFrame {
         }
     }
     
+    private void saveToCSV() {
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("Prog2-9302-AY225-TANCHINGCO/PRELIM-EXAM/Java/MOCK_DATA.csv"));
+            
+            // Write header
+            writer.write("StudentID,first_name,last_name,LAB WORK 1,LAB WORK 2,LAB WORK 3,PRELIM EXAM,ATTENDANCE GRADE");
+            writer.newLine();
+            
+            // Write all rows from table
+            for (int i = 0; i < tableModel.getRowCount(); i++) {
+                StringBuilder line = new StringBuilder();
+                for (int j = 0; j < tableModel.getColumnCount(); j++) {
+                    line.append(tableModel.getValueAt(i, j));
+                    if (j < tableModel.getColumnCount() - 1) {
+                        line.append(",");
+                    }
+                }
+                writer.write(line.toString());
+                writer.newLine();
+            }
+            
+            writer.close();
+            System.out.println("Data saved to CSV");
+            
+        } catch (IOException e) {
+            System.err.println("Error saving to CSV: " + e.getMessage());
+        }
+    }
+    
     private void addRecord() {
         String id = idField.getText().trim();
         String firstName = firstNameField.getText().trim();
@@ -256,6 +341,9 @@ public class StudentRecordSystem extends JFrame {
         }
         
         tableModel.addRow(new Object[]{id, firstName, lastName, lab1, lab2, lab3, prelim, attendance});
+        
+        // Auto-save to CSV
+        saveToCSV();
         
         // Clear fields
         idField.setText("");
@@ -285,6 +373,10 @@ public class StudentRecordSystem extends JFrame {
         
         if (confirm == JOptionPane.YES_OPTION) {
             tableModel.removeRow(selectedRow);
+            
+            // Auto-save to CSV
+            saveToCSV();
+            
             JOptionPane.showMessageDialog(this, "Record deleted!", 
                 "Success", JOptionPane.INFORMATION_MESSAGE);
         }

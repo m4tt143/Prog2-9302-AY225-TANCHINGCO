@@ -1,6 +1,6 @@
 /**
  * Student Record System - JavaScript Version
- * Programmer: [Your Full Name] - [Your Student ID]
+ * Programmer: Tanchingco, John Matthew R. - 23-0792-227
  * Date: February 4, 2026
  * 
  * This script demonstrates DOM manipulation, array operations, and template literals
@@ -127,6 +127,33 @@ function render() {
 }
 
 /**
+ * Save students array to localStorage
+ */
+function saveToLocalStorage() {
+    try {
+        localStorage.setItem('studentRecords', JSON.stringify(students));
+        console.log('Data saved to localStorage');
+    } catch (e) {
+        console.error('Error saving to localStorage:', e);
+    }
+}
+
+/**
+ * Load students array from localStorage
+ */
+function loadFromLocalStorage() {
+    try {
+        const saved = localStorage.getItem('studentRecords');
+        if (saved) {
+            students = JSON.parse(saved);
+            console.log('Data loaded from localStorage');
+        }
+    } catch (e) {
+        console.error('Error loading from localStorage:', e);
+    }
+}
+
+/**
  * Add a new student to the array
  */
 function addStudent() {
@@ -171,6 +198,9 @@ function addStudent() {
     // Add to array
     students.push(newStudent);
     
+    // Save to localStorage
+    saveToLocalStorage();
+    
     // Clear form
     document.getElementById('studentId').value = '';
     document.getElementById('firstName').value = '';
@@ -195,6 +225,9 @@ function deleteStudent(index) {
         // Remove from array
         students.splice(index, 1);
         
+        // Save to localStorage
+        saveToLocalStorage();
+        
         // Re-render table
         render();
         
@@ -208,6 +241,30 @@ function deleteStudent(index) {
 document.addEventListener('DOMContentLoaded', function() {
     // Parse CSV data into students array
     students = parseCSV(csvData);
+    
+    // 1. Filter Student ID: Allow only digits and dashes
+    const idInput = document.getElementById('studentId');
+    idInput.addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9-]/g, '');
+    });
+
+    // 2. Filter Grade Fields: Allow only digits
+    const gradeFields = ['lab1', 'lab2', 'lab3', 'prelim', 'attendance'];
+    gradeFields.forEach(id => {
+        const field = document.getElementById(id);
+        field.addEventListener('input', function(e) {
+            // Remove anything that isn't a number
+            this.value = this.value.replace(/[^0-9]/g, '');
+            
+            // Ensure grade doesn't exceed 100
+            if (this.value && parseInt(this.value) > 100) {
+                this.value = '100';
+            }
+        });
+    });
+    
+    // Load saved data from localStorage if available
+    loadFromLocalStorage();
     
     // Initial render
     render();
